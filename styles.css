@@ -1,0 +1,470 @@
+:root {
+  --void: #0e1726;
+  --panel: #15203a;
+  --panel2: #1b2942;
+  --ink: #e8edf7;
+  --muted: #7c8ba8;
+  --yellow: #ffd23f;
+  --blue: #2d7dff;
+  --green: #3ddc84;
+  --red: #ff6b6b;
+  --mono: ui-monospace, "Cascadia Code", "Cascadia Mono", "JetBrains Mono", Consolas, "SF Mono",
+    Menlo, monospace;
+  --sans: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--sans);
+  background-color: var(--void);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 22px 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 16px 64px;
+}
+
+#confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* ---------- editor window ---------- */
+.window {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 760px;
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--panel2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--mono);
+}
+.dots {
+  display: inline-flex;
+  gap: 8px;
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.red {
+  background: var(--red);
+}
+.dot.yel {
+  background: var(--yellow);
+}
+.dot.grn {
+  background: var(--green);
+}
+.filename {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.status-pill {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--green);
+  background: rgba(61, 220, 132, 0.12);
+  border: 1px solid rgba(61, 220, 132, 0.4);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.screen {
+  padding: 26px 24px 30px;
+}
+
+/* ---------- prompt / shared ---------- */
+.prompt {
+  font-family: var(--mono);
+  color: var(--muted);
+  font-size: 0.98rem;
+  margin: 0 0 16px;
+}
+.prompt::first-letter {
+  color: var(--green);
+}
+
+/* ---------- pipeline stages ---------- */
+.stages {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  font-family: var(--mono);
+}
+.stages li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 0.98rem;
+}
+.st-arrow {
+  color: var(--muted);
+}
+.st-label {
+  min-width: 70px;
+  color: var(--ink);
+}
+.st-icon.ok {
+  color: var(--green);
+}
+.st-icon.pending {
+  color: var(--yellow);
+}
+.st-note {
+  color: var(--muted);
+}
+.stages li.pending {
+  color: var(--yellow);
+}
+
+/* ---------- countdown ---------- */
+.countdown {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 24px;
+}
+.cd-box {
+  flex: 1 1 0;
+  min-width: 72px;
+  background: var(--panel2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 14px 8px;
+  text-align: center;
+}
+.cd-box span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--yellow);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.cd-box small {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+}
+
+/* ---------- streaming log ---------- */
+.log {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+  min-height: 1.7em;
+}
+.log-line {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.log-line.show {
+  opacity: 1;
+  transform: none;
+}
+.cursor {
+  color: var(--green);
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- deploy transition ---------- */
+#deploying {
+  padding: 8px 0 4px;
+}
+.progress {
+  height: 10px;
+  background: var(--panel2);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--green), var(--yellow));
+  transition: width 1.8s ease;
+}
+
+/* ---------- unlocked ---------- */
+.deploy-success {
+  font-family: var(--mono);
+  color: var(--green);
+  font-size: 0.98rem;
+  margin: 0 0 22px;
+}
+.hero {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.photo {
+  width: 132px;
+  height: 132px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 3px solid var(--yellow);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+#u-headline {
+  font-family: var(--mono);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--yellow);
+  margin: 18px 0 8px;
+  line-height: 1.15;
+}
+#u-meta {
+  font-family: var(--sans);
+  color: var(--muted);
+  margin: 0 0 18px;
+  font-size: 1.02rem;
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--panel2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px 20px;
+  transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+.btn-accent {
+  background: var(--yellow);
+  color: var(--void);
+  border-color: var(--yellow);
+}
+.btn-file {
+  border-color: rgba(45, 125, 255, 0.5);
+  color: var(--ink);
+  background: rgba(45, 125, 255, 0.1);
+  text-align: left;
+}
+.btn-file:hover {
+  border-color: var(--blue);
+}
+
+/* ---------- blocks ---------- */
+.block {
+  background: var(--panel2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 22px;
+}
+.block .prompt {
+  margin-bottom: 14px;
+}
+.block h2 {
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  margin: 0 0 14px;
+  color: var(--ink);
+}
+
+/* ---------- git log ---------- */
+.commits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--mono);
+  font-size: 0.92rem;
+}
+.commits li {
+  display: flex;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  align-items: baseline;
+}
+.commits li:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.c-hash {
+  color: var(--blue);
+  flex: none;
+}
+.c-msg {
+  color: var(--ink);
+}
+
+/* ---------- issue ---------- */
+.issue {
+  border-left: 4px solid var(--red);
+}
+.issue-head {
+  font-family: var(--mono);
+  font-size: 1.02rem;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.issue-head b {
+  color: var(--red);
+}
+.chip {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--red);
+  background: rgba(255, 107, 107, 0.12);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+}
+.issue-note {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- auth gate ---------- */
+.gate label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+.gate-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+#code-input,
+#cert-input {
+  flex: 1 1 180px;
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--void);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  padding: 12px 14px;
+  letter-spacing: 1px;
+}
+#code-input:focus,
+#cert-input:focus {
+  outline: none;
+  border-color: var(--yellow);
+}
+.gate-msg {
+  font-family: var(--mono);
+  font-weight: 700;
+  min-height: 1.4em;
+  margin: 14px 0 0;
+}
+.gate-msg.ok {
+  color: var(--green);
+}
+.gate-msg.err {
+  color: var(--red);
+}
+.downloads {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.downloads .btn-file {
+  flex: 1 1 220px;
+}
+.downloads .cert {
+  flex: 1 1 100%;
+  margin-top: 6px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+}
+.cert .prompt {
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+
+/* ---------- footer ---------- */
+.footer {
+  font-family: var(--mono);
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* ---------- a11y ---------- */
+:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .log-line {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+  .cursor {
+    animation: none;
+  }
+  .bar {
+    transition: none;
+  }
+  .btn:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 520px) {
+  #u-headline {
+    font-size: 1.7rem;
+  }
+  .cd-box span {
+    font-size: 1.8rem;
+  }
+  .screen {
+    padding: 20px 16px 24px;
+  }
+}

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>release-v23.yml · Вікторія 🎉</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="confetti"></canvas>
+
+    <main class="window">
+      <div class="titlebar">
+        <span class="dots" aria-hidden="true">
+          <i class="dot red"></i><i class="dot yel"></i><i class="dot grn"></i>
+        </span>
+        <span class="filename" id="filename"></span>
+        <span class="status-pill" id="status-pill" hidden></span>
+      </div>
+
+      <div class="screen">
+        <!-- ЗАБЛОКОВАНО: пайплайн деплою -->
+        <section id="locked">
+          <p class="prompt" id="locked-prompt"></p>
+          <ul class="stages" id="stages"></ul>
+          <div class="countdown" id="countdown">
+            <div class="cd-box"><span id="cd-days">00</span><small id="lbl-days"></small></div>
+            <div class="cd-box"><span id="cd-hours">00</span><small id="lbl-hours"></small></div>
+            <div class="cd-box"><span id="cd-minutes">00</span><small id="lbl-minutes"></small></div>
+            <div class="cd-box"><span id="cd-seconds">00</span><small id="lbl-seconds"></small></div>
+          </div>
+          <div class="log" id="log"></div>
+        </section>
+
+        <!-- ПЕРЕХІД: деплой -->
+        <div id="deploying" hidden>
+          <p class="prompt" id="deploy-msg"></p>
+          <div class="progress"><div class="bar" id="deploy-bar"></div></div>
+        </div>
+
+        <!-- РОЗБЛОКОВАНО: вечірка -->
+        <section id="unlocked" hidden>
+          <p class="deploy-success" id="deploy-success"></p>
+
+          <header class="hero">
+            <img id="photo" class="photo" alt="" />
+            <h1 id="u-headline"></h1>
+            <p id="u-meta"></p>
+            <button id="confetti-btn" class="btn btn-accent" type="button"></button>
+          </header>
+
+          <section class="block">
+            <p class="prompt" id="gitlog-title"></p>
+            <ul class="commits" id="commits"></ul>
+          </section>
+
+          <section class="block issue" id="issue"></section>
+
+          <section class="block">
+            <p class="prompt" id="voucher-prompt"></p>
+            <h2 id="voucher-title"></h2>
+            <form id="gate-form" class="gate">
+              <label id="gate-prompt" for="code-input"></label>
+              <div class="gate-row">
+                <input id="code-input" type="text" autocomplete="off" inputmode="numeric" />
+                <button id="unlock-btn" type="submit" class="btn"></button>
+              </div>
+            </form>
+            <p id="gate-msg" class="gate-msg"></p>
+            <div id="downloads" class="downloads" hidden>
+              <button id="dl-funny" class="btn btn-file" type="button"></button>
+              <div class="cert">
+                <p class="prompt" id="cert-prompt"></p>
+                <form id="cert-form" class="gate">
+                  <div class="gate-row">
+                    <input id="cert-input" type="text" autocomplete="off" />
+                    <button id="cert-btn" class="btn btn-accent" type="submit"></button>
+                  </div>
+                </form>
+                <p id="cert-msg" class="gate-msg"></p>
+              </div>
+            </div>
+          </section>
+
+          <footer class="footer" id="footer"></footer>
+        </section>
+      </div>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

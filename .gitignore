@@ -1,0 +1,11 @@
+# NEVER deploy the raw certificate — only the encrypted blob (sertifikat.enc) is safe to publish.
+Сертифікат bodo.pdf
+*.pdf
+
+# Local tooling — not part of the deployed site.
+tools/
+node_modules/
+
+passkey.txt
+# Local Claude config
+.claude/
